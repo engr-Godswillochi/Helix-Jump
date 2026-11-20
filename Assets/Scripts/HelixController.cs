@@ -7,13 +7,15 @@ public class HelixController : MonoBehaviour
 {
     private Vector2 lastTapPos;
     private Vector3 startRotation;
+    private float helixDestinace;
+    private List<GameObject> spawnedLevels = new List<GameObject>();
 
     public Transform topTransform;
     public Transform goalTransform;
     public GameObject helixLevelPrefab;
     public List<Stage> allStages = new List<Stage>();
-    private float helixDestinace;
-    private List<GameObject> spawnedLevels = new List<GameObject>();
+
+    
 
     // Start is called before the first frame update
     void Awake()
@@ -26,6 +28,13 @@ public class HelixController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        ///wait for game to start to start playing
+        /// remeber
+        if (GameManager.singleton.gameState != GameState.Playing)
+            return;
+
+        // this line adds spin to the helix automatically
+        transform.Rotate(Vector3.up * 5f * Time.deltaTime);
         /// The following function is used to move the object by swiping it
         /// Remember for future reuseability 
 
@@ -40,7 +49,7 @@ public class HelixController : MonoBehaviour
             float delta = lastTapPos.x - curTapPos.x;
             lastTapPos = curTapPos;
 
-            transform.Rotate(Vector3.up * delta);
+            transform.Rotate(Vector3.up * delta * 0.5f);
         }
         if (Input.GetMouseButtonUp(0))
         {
@@ -112,7 +121,7 @@ public class HelixController : MonoBehaviour
 
             while(deathParts.Count < stage.levels[i].deathPartCount)
             {
-                GameObject randomParts = leftParts[(Random.Range(0, leftParts.Count))];
+                GameObject randomParts = leftParts[Random.Range(0, leftParts.Count)];
                 if (!deathParts.Contains(randomParts))
                 {
                     randomParts.gameObject.AddComponent<DeathPart>();
